@@ -1,0 +1,144 @@
+name: Update Docker Image
+
+on:
+  # Deactivated: use workflow_dispatch to trigger manually, or re-enable for daily upstream check
+  # schedule:
+  #   - cron: '0 8 * * *'
+  workflow_dispatch: {}
+
+  push:
+    branches:
+      - "**"
+
+env:
+  IMAGE: ghcr.io/jspiers/presidio-analyzer
+  BASE_IMAGE: mcr.microsoft.com/presidio-analyzer:latest
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    outputs:
+      digest: ${{ steps.check-digest.outputs.digest }}
+      changed: ${{ steps.check-digest.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - uses: imjasonh/setup-crane@v0.1
+        with:
+          version: v0.21.0
+
+      - name: Fetch and compare upstream digest
+        id: check-digest
+        run: |
+          # Get current upstream digest
+          CURRENT=$(crane digest ${{ env.BASE_IMAGE }})
+          echo "Current upstream digest: $CURRENT"
+
+          # Read base_image_digest label from the previously pushed image for this branch
+          PREV=$(crane config ${{ env.IMAGE }}:${{ github.ref_name }} 2>/dev/null | jq -r '.config.Labels["base_image_digest"] // empty')
+
+          echo "Previous base digest: $PREV"
+          echo "digest=$CURRENT" >> $GITHUB_OUTPUT
+
+          if [ "$CURRENT" != "$PREV" ] && [ -n "$CURRENT" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "Upstream changed — will rebuild"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No change — skipping rebuild"
+          fi
+
+  build-and-test:
+    needs: check-upstream
+    if: needs.check-upstream.outputs.changed == 'true' || github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      test_passed: ${{ steps.tests.outputs.passed }}
+      image_tag: ${{ steps.meta.outputs.image_tag }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set metadata
+        id: meta
+        run: echo "image_tag=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.meta.outputs.image_tag }}
+          platforms: linux/amd64
+          annotations: |
+            base_image_digest=${{ needs.check-upstream.outputs.digest }}
+
+      - name: Install hurl
+        run: |
+          curl -fsSL https://github.com/Orange-OpenSource/hurl/releases/download/7.1.0/hurl_7.1.0_amd64.deb -o /tmp/hurl.deb
+          sudo dpkg -i /tmp/hurl.deb
+
+      - name: Start container
+        run: |
+          docker run -d --rm -p 3000:3000 --name presidio-test ${{ env.IMAGE }}:${{ steps.meta.outputs.image_tag }}
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/health && break
+            sleep 1
+          done
+
+      - name: Run hurl tests
+        id: tests
+        run: |
+          set -o pipefail
+          hurl --test --variable base_url=localhost:3000 tests/ && echo "passed=true" >> $GITHUB_OUTPUT || echo "passed=false" >> $GITHUB_OUTPUT
+
+      - name: Stop container
+        if: always()
+        run: docker stop presidio-test || true
+
+  push-and-commit:
+    needs: [check-upstream, build-and-test]
+    if: needs.build-and-test.outputs.test_passed == 'true' && github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull image and push branch tag
+        run: |
+          docker pull ${{ env.IMAGE }}:${{ needs.build-and-test.outputs.image_tag }}
+          docker tag ${{ env.IMAGE }}:${{ needs.build-and-test.outputs.image_tag }} ${{ env.IMAGE }}:${{ github.ref_name }}
+          docker push ${{ env.IMAGE }}:${{ github.ref_name }}
+
+      - name: Push latest tag
+        if: github.ref_name == 'main'
+        run: |
+          docker tag ${{ env.IMAGE }}:${{ needs.build-and-test.outputs.image_tag }} ${{ env.IMAGE }}:latest
+          docker push ${{ env.IMAGE }}:latest
