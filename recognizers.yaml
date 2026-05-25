@@ -1,0 +1,76 @@
+custom_recognizers:
+  - name: AwsAccessKeyRecognizer
+    type: custom
+    supported_entity: AWS_ACCESS_KEY
+    supported_language: en
+    patterns:
+      - name: aws_access_key
+        regex: 'AKIA[0-9A-Z]{16}'
+        score: 0.9
+
+  - name: AwsSecretKeyRecognizer
+    type: custom
+    supported_entity: AWS_SECRET_KEY
+    supported_language: en
+    patterns:
+      - name: aws_secret_key
+        regex: '(?<![A-Za-z0-9/+])[A-Za-z0-9/+]{40}(?![A-Za-z0-9/+])'
+        score: 0.7
+
+  - name: GithubTokenRecognizer
+    type: custom
+    supported_entity: GITHUB_TOKEN
+    supported_language: en
+    patterns:
+      - name: github_token
+        regex: '(ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9_]{36,255}'
+        score: 0.85
+
+  - name: OpenAIApiKeyRecognizer
+    type: custom
+    supported_entity: OPENAI_API_KEY
+    supported_language: en
+    patterns:
+      - name: openai_api_key
+        regex: 'sk-[A-Za-z0-9_-]{32,}'
+        score: 0.9
+
+  - name: PrivateKeyRecognizer
+    type: custom
+    supported_entity: PRIVATE_KEY
+    supported_language: en
+    patterns:
+      - name: private_key
+        regex: '-----BEGIN (RSA |EC |OPENSSH |DSA )?PRIVATE KEY-----[\s\S]*?-----END \1?PRIVATE KEY-----'
+        score: 0.95
+
+  - name: JwtTokenRecognizer
+    type: custom
+    supported_entity: JWT_TOKEN
+    supported_language: en
+    patterns:
+      - name: jwt_token
+        regex: 'eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}'
+        score: 0.7
+
+  - name: ConnectionStringRecognizer
+    type: custom
+    supported_entity: CONNECTION_STRING
+    supported_language: en
+    patterns:
+      # URL-format: postgres://user:pass@host (PasteGuard-compatible)
+      - name: url_connection_string
+        regex: '[a-zA-Z][a-zA-Z0-9+.-]*://[^/:@]+:[^/:@]+@[^/?#]+'
+        score: 0.85
+      # SQL Server OLEDB: Server=...;User Id=...;Password=...;
+      - name: sqlserver_connection_string
+        regex: '(Server|Data Source)=[^;]+;.*?(User Id|UID)=[^;]+;.*?(Password|PWD)=[^;]+;'
+        score: 0.85
+      # SSH: ssh://user@host or ssh user@host
+      - name: ssh_connection_string
+        regex: 'ssh://[^@]+@[^/\s]+|ssh [^@]+@[^/\s]+'
+        score: 0.75
+      # HTTP/HTTPS basic auth
+      - name: http_basic_auth_url
+        regex: 'https?://[^/:@]+:[^/@]+@[^/\s]+'
+        score: 0.75
