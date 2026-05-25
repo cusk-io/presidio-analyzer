@@ -6,7 +6,7 @@ Extends Microsoft's Presidio Analyzer with 7 custom secret-detection recognizers
 
 | Feature | Base image | This image |
 |---|---|---|
-| Custom recognizers | None | 7 custom patterns merged at startup |
+| Custom recognizers | None | 7 custom patterns merged at build time |
 | Connection strings | Basic pattern only | URL, SQL Server OLEDB, SSH, HTTP basic auth |
 | Deduplication | None | Skips recognizers already in base image |
 | Idempotent restarts | No | Yes — safe to restart |
@@ -20,9 +20,47 @@ docker build -t presidio-analyzer:local .
 # Run
 docker run --rm -p 3000:3000 presidio-analyzer:local
 
-# Test
-hurl --test tests/   # requires hurl CLI (brew install hurl)
+# Test (requires hurl — brew install hurl)
+hurl --test tests/
 ```
+
+## Testing
+
+Install hurl: `brew install hurl` (macOS) or see https://hurl.dev
+
+Start the container:
+```bash
+docker run --rm -p 3000:3000 presidio-analyzer:local
+```
+
+Run all tests:
+```bash
+hurl --test --variable base_url=localhost:3000 tests/
+```
+
+Run a specific test file:
+```bash
+hurl --test --variable base_url=localhost:3000 tests/aws-credentials.hurl
+```
+
+### Test files
+
+| File | Coverage |
+|---|---|
+| `health.hurl` | `/health` endpoint |
+| `aws-credentials.hurl` | AWS access key, secret key |
+| `github-tokens.hurl` | GitHub PAT, fine-grained PAT, OAuth tokens |
+| `openai-keys.hurl` | OpenAI `sk-` keys, Anthropic `sk-ant-` keys |
+| `private-keys.hurl` | RSA, EC, OPENSSH private key blocks |
+| `jwt-tokens.hurl` | JWT with 3 base64 segments |
+| `connection-strings.hurl` | URL, SQL Server OLEDB, SSH, HTTP basic auth |
+| `pii.hurl` | Email, phone, person names |
+| `financial.hurl` | Credit cards, IBAN, IP addresses |
+| `negative-cases.hurl` | Near-miss strings that should NOT detect |
+
+### Score thresholds
+
+Tests use conservative thresholds (`>= 0.6` minimum) to avoid flakiness. Calibrate by running tests against a live container and adjusting if legitimate detections are missed.
 
 ## API reference
 
