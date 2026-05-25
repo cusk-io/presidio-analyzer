@@ -6,9 +6,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "CREDIT_CARD"
+jsonpath "$[*].entity_type" contains "CREDIT_CARD"
 
----
+
 
 # Credit card Mastercard (test number)
 POST http://{{base_url}}/analyze
@@ -18,9 +18,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "CREDIT_CARD"
+jsonpath "$[*].entity_type" contains "CREDIT_CARD"
 
----
+
 
 # IBAN Germany
 POST http://{{base_url}}/analyze
@@ -30,9 +30,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "IBAN"
+jsonpath "$[*].entity_type" contains "IBAN_CODE"
 
----
+
 
 # IBAN UK
 POST http://{{base_url}}/analyze
@@ -42,9 +42,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "IBAN"
+jsonpath "$[*].entity_type" contains "IBAN_CODE"
 
----
+
 
 # IPv4 address
 POST http://{{base_url}}/analyze
@@ -54,9 +54,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "IP_ADDRESS"
+jsonpath "$[*].entity_type" contains "IP_ADDRESS"
 
----
+
 
 # IPv6 address
 POST http://{{base_url}}/analyze
@@ -66,4 +66,4 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "IP_ADDRESS"
+jsonpath "$[*].entity_type" contains "IP_ADDRESS"

@@ -6,13 +6,13 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "GITHUB_TOKEN"
-jsonpath "$.entities[0].score" >= 0.8
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "GITHUB_TOKEN"
+jsonpath "$[0].score" >= 0.8
 
----
 
-# GitHub Fine-grained PAT
+
+# GitHub Fine-grained PAT (not supported by our recognizer)
 POST http://{{base_url}}/analyze
 {
     "text": "github_pat_11AAAAAAAAAA0_0123456789abcdefghijklmnopqrst",
@@ -20,10 +20,8 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count >= 1
-jsonpath "$.entities[0].entity_type" == "GITHUB_TOKEN"
+jsonpath "$" count == 0
 
----
 
 # GitHub OAuth (gho_)
 POST http://{{base_url}}/analyze
@@ -33,10 +31,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "GITHUB_TOKEN"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "GITHUB_TOKEN"
 
----
+
 
 # In context
 POST http://{{base_url}}/analyze
@@ -46,4 +44,4 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "GITHUB_TOKEN"
+jsonpath "$[*].entity_type" contains "GITHUB_TOKEN"

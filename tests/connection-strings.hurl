@@ -6,11 +6,11 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
-jsonpath "$.entities[0].score" >= 0.7
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$[0].score" >= 0.7
 
----
+
 
 # MySQL URL-format
 POST http://{{base_url}}/analyze
@@ -20,10 +20,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"
 
----
+
 
 # MongoDB SRV
 POST http://{{base_url}}/analyze
@@ -33,10 +33,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"
 
----
+
 
 # Redis with TLS
 POST http://{{base_url}}/analyze
@@ -46,10 +46,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"
 
----
+
 
 # SQL Server OLEDB format
 POST http://{{base_url}}/analyze
@@ -59,10 +59,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"
 
----
+
 
 # SSH user@host
 POST http://{{base_url}}/analyze
@@ -72,10 +72,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"
 
----
+
 
 # SSH with protocol prefix
 POST http://{{base_url}}/analyze
@@ -85,10 +85,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"
 
----
+
 
 # HTTP Basic Auth URL
 POST http://{{base_url}}/analyze
@@ -98,10 +98,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"
 
----
+
 
 # Password-only basic auth
 POST http://{{base_url}}/analyze
@@ -111,5 +111,5 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "CONNECTION_STRING"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "CONNECTION_STRING"

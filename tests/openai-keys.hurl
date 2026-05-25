@@ -6,11 +6,11 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "OPENAI_API_KEY"
-jsonpath "$.entities[0].score" >= 0.8
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "OPENAI_API_KEY"
+jsonpath "$[0].score" >= 0.8
 
----
+
 
 # OpenAI sk-exp key
 POST http://{{base_url}}/analyze
@@ -20,10 +20,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "OPENAI_API_KEY"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "OPENAI_API_KEY"
 
----
+
 
 # Anthropic key (sk-ant-)
 POST http://{{base_url}}/analyze
@@ -33,9 +33,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "OPENAI_API_KEY"
+jsonpath "$[*].entity_type" contains "OPENAI_API_KEY"
 
----
+
 
 # In context
 POST http://{{base_url}}/analyze
@@ -45,4 +45,4 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "OPENAI_API_KEY"
+jsonpath "$[*].entity_type" contains "OPENAI_API_KEY"

@@ -6,11 +6,11 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "PRIVATE_KEY"
-jsonpath "$.entities[0].score" >= 0.9
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "PRIVATE_KEY"
+jsonpath "$[0].score" >= 0.9
 
----
+
 
 # EC Private Key
 POST http://{{base_url}}/analyze
@@ -20,10 +20,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "PRIVATE_KEY"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "PRIVATE_KEY"
 
----
+
 
 # OPENSSH Private Key
 POST http://{{base_url}}/analyze
@@ -33,5 +33,5 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "PRIVATE_KEY"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "PRIVATE_KEY"

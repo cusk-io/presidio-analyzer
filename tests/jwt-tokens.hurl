@@ -6,11 +6,11 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "JWT_TOKEN"
-jsonpath "$.entities[0].score" >= 0.6
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "JWT_TOKEN"
+jsonpath "$[0].score" >= 0.6
 
----
+
 
 # Bearer token style
 POST http://{{base_url}}/analyze
@@ -20,10 +20,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count == 1
-jsonpath "$.entities[0].entity_type" == "JWT_TOKEN"
+jsonpath "$" count == 1
+jsonpath "$[0].entity_type" == "JWT_TOKEN"
 
----
+
 
 # JWT in context
 POST http://{{base_url}}/analyze
@@ -33,4 +33,4 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "JWT_TOKEN"
+jsonpath "$[*].entity_type" contains "JWT_TOKEN"

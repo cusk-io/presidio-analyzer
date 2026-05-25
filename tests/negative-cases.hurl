@@ -1,4 +1,4 @@
-# --- NEGATIVE CASES: strings that should NOT trigger detections ---
+# --- NEGATIVE CASES: strings that should NOT trigger detections 
 
 # Email incomplete (no domain)
 POST http://{{base_url}}/analyze
@@ -8,9 +8,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "EMAIL_ADDRESS"
+jsonpath "$[*].entity_type" not contains "EMAIL_ADDRESS"
 
----
+
 
 # Email no local part
 POST http://{{base_url}}/analyze
@@ -20,9 +20,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "EMAIL_ADDRESS"
+jsonpath "$[*].entity_type" not contains "EMAIL_ADDRESS"
 
----
+
 
 # Phone too short
 POST http://{{base_url}}/analyze
@@ -32,9 +32,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "PHONE_NUMBER"
+jsonpath "$[*].entity_type" not contains "PHONE_NUMBER"
 
----
+
 
 # Not a phone
 POST http://{{base_url}}/analyze
@@ -44,9 +44,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "PHONE_NUMBER"
+jsonpath "$[*].entity_type" not contains "PHONE_NUMBER"
 
----
+
 
 # Invalid IP octet
 POST http://{{base_url}}/analyze
@@ -56,9 +56,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "IP_ADDRESS"
+jsonpath "$[*].entity_type" not contains "IP_ADDRESS"
 
----
+
 
 # Out of range IP octets
 POST http://{{base_url}}/analyze
@@ -68,9 +68,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "IP_ADDRESS"
+jsonpath "$[*].entity_type" not contains "IP_ADDRESS"
 
----
+
 
 # AWS key wrong prefix
 POST http://{{base_url}}/analyze
@@ -80,9 +80,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "AWS_ACCESS_KEY"
+jsonpath "$[*].entity_type" not contains "AWS_ACCESS_KEY"
 
----
+
 
 # GitHub token too short
 POST http://{{base_url}}/analyze
@@ -92,9 +92,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "GITHUB_TOKEN"
+jsonpath "$[*].entity_type" not contains "GITHUB_TOKEN"
 
----
+
 
 # OpenAI key too short
 POST http://{{base_url}}/analyze
@@ -104,9 +104,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "OPENAI_API_KEY"
+jsonpath "$[*].entity_type" not contains "OPENAI_API_KEY"
 
----
+
 
 # JWT only 2 segments (no signature)
 POST http://{{base_url}}/analyze
@@ -116,9 +116,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "JWT_TOKEN"
+jsonpath "$[*].entity_type" not contains "JWT_TOKEN"
 
----
+
 
 # Private key no content
 POST http://{{base_url}}/analyze
@@ -128,9 +128,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "PRIVATE_KEY"
+jsonpath "$[*].entity_type" not contains "PRIVATE_KEY"
 
----
+
 
 # Connection string no credentials
 POST http://{{base_url}}/analyze
@@ -140,9 +140,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "CONNECTION_STRING"
+jsonpath "$[*].entity_type" not contains "CONNECTION_STRING"
 
----
+
 
 # Connection string empty password
 POST http://{{base_url}}/analyze
@@ -152,9 +152,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "CONNECTION_STRING"
+jsonpath "$[*].entity_type" not contains "CONNECTION_STRING"
 
----
+
 
 # Connection string no credentials at all
 POST http://{{base_url}}/analyze
@@ -164,9 +164,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "CONNECTION_STRING"
+jsonpath "$[*].entity_type" not contains "CONNECTION_STRING"
 
----
+
 
 # SQL Server no password
 POST http://{{base_url}}/analyze
@@ -176,4 +176,4 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" notContains "CONNECTION_STRING"
+jsonpath "$[*].entity_type" not contains "CONNECTION_STRING"

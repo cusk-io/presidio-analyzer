@@ -6,10 +6,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count >= 1
-jsonpath "$.entities[*].entity_type" contains "EMAIL_ADDRESS"
+jsonpath "$" count >= 1
+jsonpath "$[*].entity_type" contains "EMAIL_ADDRESS"
 
----
+
 
 POST http://{{base_url}}/analyze
 {
@@ -18,10 +18,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count >= 1
-jsonpath "$.entities[*].entity_type" contains "EMAIL_ADDRESS"
+jsonpath "$" count >= 1
+jsonpath "$[*].entity_type" contains "EMAIL_ADDRESS"
 
----
+
 
 # US Phone number
 POST http://{{base_url}}/analyze
@@ -31,10 +31,10 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities" count >= 1
-jsonpath "$.entities[*].entity_type" contains "PHONE_NUMBER"
+jsonpath "$" count >= 1
+jsonpath "$[*].entity_type" contains "PHONE_NUMBER"
 
----
+
 
 # UK Phone number
 POST http://{{base_url}}/analyze
@@ -44,9 +44,9 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "PHONE_NUMBER"
+jsonpath "$[*].entity_type" contains "PHONE_NUMBER"
 
----
+
 
 # Names (depends on context, may not always trigger)
 POST http://{{base_url}}/analyze
@@ -56,4 +56,4 @@ POST http://{{base_url}}/analyze
 }
 HTTP 200
 [Asserts]
-jsonpath "$.entities[*].entity_type" contains "PERSON"
+jsonpath "$[*].entity_type" contains "PERSON"
