@@ -1,1 +1,2 @@
 - review and test scheduled upstream docker base image digest check in github workflows
+- replace TODO.md and KNOWN_ISSUES.md docs with GitHub issues
