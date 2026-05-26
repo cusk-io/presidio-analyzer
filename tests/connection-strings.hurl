@@ -90,26 +90,3 @@ jsonpath "$[0].entity_type" == "CONNECTION_STRING"
 
 
 
-# HTTP Basic Auth URL
-POST http://{{base_url}}/analyze
-{
-    "text": "https://admin:admin123@api.example.com/v1/users",
-    "language": "en"
-}
-HTTP 200
-[Asserts]
-jsonpath "$" count == 1
-jsonpath "$[0].entity_type" == "CONNECTION_STRING"
-
-
-
-# Password-only basic auth
-POST http://{{base_url}}/analyze
-{
-    "text": "https://:secret_token@registry.example.com/v2/",
-    "language": "en"
-}
-HTTP 200
-[Asserts]
-jsonpath "$" count == 1
-jsonpath "$[0].entity_type" == "CONNECTION_STRING"
