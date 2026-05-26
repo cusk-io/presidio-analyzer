@@ -8,6 +8,8 @@ Documented limitations and false positives discovered through testing.
 
 **Severity**: Enhancement
 
+**Status**: Tracked in KNOWN_ISSUES.md; `tests/connection-strings.hurl` renamed to `tests/connection-strings.hurl.inactive` — all connection string tests are currently deactivated.
+
 **Description**: When connection string URLs contain words that resemble email addresses (e.g., `adminuser@db.example.com`), Presidio's base EMAIL_ADDRESS recognizer fires on the `user@domain` substring, producing additional false-positive entities alongside the correct CONNECTION_STRING detection.
 
 **Example**:
@@ -28,6 +30,8 @@ Detected entities:
 ### Password-only basic auth URL not detected
 
 **Severity**: Bug
+
+**Status**: Tracked in KNOWN_ISSUES.md; `tests/connection-strings.hurl` renamed to `tests/connection-strings.hurl.inactive` — all connection string tests are currently deactivated.
 
 **Description**: Connection string URLs with empty username (e.g., `https://:token@host/path`) are not detected as CONNECTION_STRING.
 
