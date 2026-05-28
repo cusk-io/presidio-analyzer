@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   docker-image:
-    uses: ./.github/workflows/docker-build-push.yml
+    uses: cusk-io/.github/.github/workflows/docker-build-push.yml
     with:
       image_name: ghcr.io/cusk-io/presidio-analyzer
       test_script: |
