@@ -1,4 +1,4 @@
-name: Docker Build, Test & Push (reusable)
+name: Docker Build, Test & Push
 
 on:
   workflow_call:
@@ -24,8 +24,6 @@ on:
     outputs:
       test_passed:
         value: ${{ jobs.test.outputs.test_passed }}
-      sha_tag:
-        value: ${{ jobs.build.outputs.sha_tag }}
 
 env:
   IMAGE: ${{ inputs.image_name }}
@@ -63,7 +61,7 @@ jobs:
           if [[ "${{ github.ref_type }}" == "branch" ]]; then
             BRANCH="${{ github.ref_name }}"
             # Prepend the final image of the branch (still useful for incremental builds)
-            CACHE_FROM="type=registry,ref=${{ env.IMAGE }}:${BRANCH}"$'\n'"${CACHE_FROM}"
+            CACHE_FROM="type=registry,ref=${{ env.IMAGE }}:branch-${BRANCH}"$'\n'"${CACHE_FROM}"
             # Prepend (highest priorirty) full build cache from previous runs (richest source)
             CACHE_FROM="type=registry,ref=${{ env.IMAGE }}:buildcache-${BRANCH}"$'\n'"${CACHE_FROM}"
             # Push cache to the dedicated buildcache tag
@@ -146,8 +144,8 @@ jobs:
           BRANCH: ${{ github.ref_name }}
         run: |
           docker pull ${{ env.IMAGE }}:${SHA_TAG}
-          docker tag ${{ env.IMAGE }}:${SHA_TAG} ${{ env.IMAGE }}:${BRANCH}
-          docker push ${{ env.IMAGE }}:${BRANCH}
+          docker tag ${{ env.IMAGE }}:${SHA_TAG} ${{ env.IMAGE }}:branch-${BRANCH}
+          docker push ${{ env.IMAGE }}:branch-${BRANCH}
           if [[ "${BRANCH}" == "main" || "${BRANCH}" == "master" ]]; then
             docker tag ${{ env.IMAGE }}:${SHA_TAG} ${{ env.IMAGE }}:latest
             docker push ${{ env.IMAGE }}:latest
