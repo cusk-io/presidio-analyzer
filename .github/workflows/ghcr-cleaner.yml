@@ -16,8 +16,9 @@ jobs:
           token: ${{ secrets.GHT_PAT_CONTAINER_RETENTION_POLICY }}
           repository-owner: ${{ github.repository_owner }}
 
-          # Target: Clean up images across all packages
-          package-name: "*"
+          # Use repository name to specify a repository
+          # repository-name: ""
+          # Use package-name to sepcify a package (no wildcards)
           #package-name: "presidio-analyzer"
 
           # Delete truly unreferenced untagged images (multi-arch safe)
