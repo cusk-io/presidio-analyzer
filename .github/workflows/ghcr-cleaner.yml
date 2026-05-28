@@ -1,4 +1,4 @@
-name: GHCR Cleanup
+name: GHCR Cleaner
 
 on:
   workflow_dispatch:
