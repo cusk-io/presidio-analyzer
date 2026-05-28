@@ -16,5 +16,5 @@ jobs:
           token: ${{ secrets.GHT_PAT_CONTAINER_RETENTION_POLICY }}
           image-names: "presidio-analyzer otherexample"
           image-tags: "sha-* otherprefix*"
-          cut-off: 6h
+          cut-off: 10m
           dry-run: true
