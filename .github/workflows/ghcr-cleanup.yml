@@ -20,15 +20,18 @@ jobs:
           #package-name: "*"
           package-name: "presidio-analyzer"
 
-          # 1. Delete truly unreferenced untagged images (multi-arch safe)
+          # Delete truly unreferenced untagged images (multi-arch safe)
           delete-untagged: true
 
-          # 2. For tagged images, keep only the 5 most recent that match our CI patterns
+          # For tagged images, keep only the 5 most recent that match our CI patterns
           keep-at-most: 5
-          filter-tags: "sha-*,otherprefix*"
 
-          # 3. CRITICAL: Never delete these tags, using wildcards for broad protection
-          skip-tags: "latest,buildcache-*,v*"
+          # Only delete tagged images within this list, keeping at most "keep-at-most"
+          filter-tags: "sha-*,otherexampletag*"
 
-          dry-run: true # !! Set to false after reviewing the log output !!
+          # skip-tags: Never delete these tags, using wildcards for broad protection
+          # Redundant in present case since these will not be included in filter-tags scope anyways
+          skip-tags: "latest,buildcache-*,branch-*,[0-9]*"
 
+          # set to false after verifying planned deletions in github action log output
+          dry-run: true
