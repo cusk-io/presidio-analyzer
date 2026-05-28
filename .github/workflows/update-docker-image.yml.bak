@@ -1,0 +1,100 @@
+name: Update Docker Image
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches:
+      - "**"
+    tags:
+      - "dockertag-*"
+
+env:
+  IMAGE: ghcr.io/jspiers/presidio-analyzer
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      test_passed: ${{ steps.tests.outputs.passed }}
+      sha: ${{ steps.meta.outputs.sha }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set metadata
+        id: meta
+        run: echo "sha=sha-${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ steps.meta.outputs.sha }}
+          platforms: linux/amd64
+
+      - name: Install hurl
+        run: |
+          curl -fsSL https://github.com/Orange-OpenSource/hurl/releases/download/7.1.0/hurl_7.1.0_amd64.deb -o /tmp/hurl.deb
+          sudo dpkg -i /tmp/hurl.deb
+
+      - name: Start container
+        run: |
+          docker run -d --rm -p 3000:3000 --name presidio-test ${{ env.IMAGE }}:${{ steps.meta.outputs.sha }}
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/health && break
+            sleep 1
+          done
+
+      - name: Run hurl tests
+        id: tests
+        run: |
+          set -o pipefail
+          hurl --test --variable base_url=localhost:3000 tests/ && echo "passed=true" >> $GITHUB_OUTPUT || echo "passed=false" >> $GITHUB_OUTPUT
+
+      - name: Stop container
+        if: always()
+        run: docker stop presidio-test || true
+
+  push:
+    needs: [build-and-test]
+    if: needs.build-and-test.outputs.test_passed == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull image and push ref tag
+        run: |
+          GITHUB_REF_NAME="${{ github.ref_name }}"
+          docker pull ${{ env.IMAGE }}:${{ needs.build-and-test.outputs.sha }}
+          docker tag ${{ env.IMAGE }}:${{ needs.build-and-test.outputs.sha }} ${{ env.IMAGE }}:${GITHUB_REF_NAME#dockertag-}
+          docker push ${{ env.IMAGE }}:${GITHUB_REF_NAME#dockertag-}
+
+      - name: Push latest tag
+        if: github.ref_name == 'main'
+        run: |
+          docker tag ${{ env.IMAGE }}:${{ needs.build-and-test.outputs.sha }} ${{ env.IMAGE }}:latest
+          docker push ${{ env.IMAGE }}:latest
